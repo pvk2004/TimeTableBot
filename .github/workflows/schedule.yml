@@ -3,7 +3,7 @@ name: Send WhatsApp Timetable
 on:
   schedule:
     # Runs every day at 8:00 AM UTC (adjust cron for your timezone)
-    - cron: '0 8 * * *'
+    - cron: '30 2 * * *'
   workflow_dispatch:  # Allow manual trigger
 
 jobs:
