@@ -22,7 +22,7 @@ if __name__ == "__main__":
     now = datetime.now()
     # Only send at 8:00 AM
     if now.hour == 8 and now.minute == 0:
-        timetable = parse_excel_timetable("E:/New folder/timetable.xlsx")
+        timetable = parse_excel_timetable("timetable.xlsx")
         today = now.strftime("%A").upper()
         slots = timetable.get(today) or timetable.get(today.title()) or []
         message = build_whatsapp_message(today.title(), slots)

@@ -49,9 +49,3 @@ def parse_excel_timetable(file_path):
         timetable[day] = slot_list
     return timetable
 
-
-def parse_pdf_timetable(file_path):
-    """
-    Placeholder for PDF timetable parsing.
-    """
-    raise NotImplementedError("PDF parsing not implemented yet.")
