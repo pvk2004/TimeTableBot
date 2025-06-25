@@ -21,21 +21,21 @@ def build_whatsapp_message(day, slots):
 if __name__ == "__main__":
     now = datetime.now()
     # Only send at 8:00 AM
-    if now.hour == 8 and now.minute == 0:
-        timetable = parse_excel_timetable("timetable.xlsx")
-        today = now.strftime("%A").upper()
-        slots = timetable.get(today) or timetable.get(today.title()) or []
-        message = build_whatsapp_message(today.title(), slots)
-        print(message)
+    # if now.hour == 8 and now.minute == 0:
+    timetable = parse_excel_timetable("timetable.xlsx")
+    today = now.strftime("%A").upper()
+    slots = timetable.get(today) or timetable.get(today.title()) or []
+    message = build_whatsapp_message(today.title(), slots)
+    print(message)
 
         # Read Twilio credentials and WhatsApp numbers from environment variables
-        account_sid = os.environ.get("TWILIO_ACCOUNT_SID")
-        auth_token = os.environ.get("TWILIO_AUTH_TOKEN")
-        from_whatsapp_number = os.environ.get("TWILIO_FROM_WHATSAPP")
-        to_whatsapp_numbers = os.environ.get("TWILIO_TO_WHATSAPP_LIST", "").split(",")
-        to_whatsapp_numbers = [num.strip() for num in to_whatsapp_numbers if num.strip()]
+    account_sid = os.environ.get("TWILIO_ACCOUNT_SID")
+    auth_token = os.environ.get("TWILIO_AUTH_TOKEN")
+    from_whatsapp_number = os.environ.get("TWILIO_FROM_WHATSAPP")
+    to_whatsapp_numbers = os.environ.get("TWILIO_TO_WHATSAPP_LIST", "").split(",")
+    to_whatsapp_numbers = [num.strip() for num in to_whatsapp_numbers if num.strip()]
 
-        for to_whatsapp_number in to_whatsapp_numbers:
-            send_whatsapp_message_twilio(account_sid, auth_token, from_whatsapp_number, to_whatsapp_number, message)
-    else:
-        print("Not 8:00 AM. No message sent.")
+    for to_whatsapp_number in to_whatsapp_numbers:
+        send_whatsapp_message_twilio(account_sid, auth_token, from_whatsapp_number, to_whatsapp_number, message)
+    # else:
+        # print("Not 8:00 AM. No message sent.")
