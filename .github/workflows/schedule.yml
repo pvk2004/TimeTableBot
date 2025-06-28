@@ -2,13 +2,14 @@ name: Send WhatsApp Timetable
 
 on:
   schedule:
-    # Runs every day at 8:00 AM UTC (adjust cron for your timezone)
+    # Runs every day at 8:00 AM IST (which is 2:30 AM UTC)
     - cron: '30 2 * * *'
   workflow_dispatch:  # Allow manual trigger
 
 jobs:
   send-timetable:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -22,11 +23,17 @@ jobs:
         run: |
           pip install -r requirements.txt
 
-      - name: Run timetable bot
+      - name: Debug and Run Bot
         env:
           TWILIO_ACCOUNT_SID: ${{ secrets.TWILIO_ACCOUNT_SID }}
           TWILIO_AUTH_TOKEN: ${{ secrets.TWILIO_AUTH_TOKEN }}
           TWILIO_FROM_WHATSAPP: ${{ secrets.TWILIO_FROM_WHATSAPP }}
           TWILIO_TO_WHATSAPP_LIST: ${{ secrets.TWILIO_TO_WHATSAPP_LIST }}
         run: |
+          echo "🔍 Debug:"
+          echo "SID starts with: ${TWILIO_ACCOUNT_SID:0:6}"
+          echo "Token starts with: ${TWILIO_AUTH_TOKEN:0:6}"
+          echo "From: $TWILIO_FROM_WHATSAPP"
+          echo "To: $TWILIO_TO_WHATSAPP_LIST"
+          echo "🚀 Running bot..."
           python main.py
