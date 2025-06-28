@@ -29,10 +29,10 @@ if __name__ == "__main__":
     print(message)
 
         # Read Twilio credentials and WhatsApp numbers from environment variables
-    account_sid = os.environ.get("TWILIO_ACCOUNT_SID")
-    auth_token = os.environ.get("TWILIO_AUTH_TOKEN")
-    from_whatsapp_number = os.environ.get("TWILIO_FROM_WHATSAPP")
-    to_whatsapp_numbers = os.environ.get("TWILIO_TO_WHATSAPP_LIST", "").split(",")
+    account_sid = os.getenv("TWILIO_ACCOUNT_SID")
+    auth_token = os.getenv("TWILIO_AUTH_TOKEN")
+    from_whatsapp_number = os.getenv("TWILIO_FROM_WHATSAPP")
+    to_whatsapp_numbers = os.getenv("TWILIO_TO_WHATSAPP_LIST", "").split(",")
     to_whatsapp_numbers = [num.strip() for num in to_whatsapp_numbers if num.strip()]
 
     for to_whatsapp_number in to_whatsapp_numbers:
