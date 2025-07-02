@@ -1,16 +1,16 @@
-# 📅 TimeTableBot
+# 📅 TimeTableBot 
 
-TimeTableBot is a Telegram bot that automatically sends users their class timetable based on the current day. It is designed to save time for students who need quick access to their daily or weekly class schedules.
+TimeTableBot is a Telegram bot that automatically sends you your class timetable for the day and can send reminders for each class as it starts. Designed for students who want daily and hourly schedule notifications—completely free using Telegram!
 
 ---
 
 ## 🚀 Features
 
-- 📆 Sends daily class timetable
-- ⏱ Shows upcoming classes with `/next`
-- 🗓 View today's schedule with `/today`
-- 🤖 Simple Telegram bot interface
-- 🧾 Loads timetable from CSV or database (configurable)
+- 📆 Sends daily class timetable every morning at 8:00 AM (IST)
+- ⏰ Sends reminders at the start of each class (no spam during long labs)
+- 🗓 Loads timetable from an Excel file (`timetable.xlsx`)
+- 🤖 100% free using Telegram Bot API
+- ☁️ Can be automated with GitHub Actions (no server needed)
 
 ---
 
@@ -28,73 +28,73 @@ pip install -r requirements.txt
 
 ## ⚙️ Configuration
 
-Edit `config.py` or create a `.env` file with your Telegram bot token:
+1. **Create a Telegram Bot:**
 
-```python
-BOT_TOKEN = "YOUR_TELEGRAM_BOT_TOKEN"
-DATA_FILE = "timetable.csv"
+   - Message [@BotFather](https://t.me/BotFather) on Telegram
+   - Use `/newbot` and follow the instructions
+   - Save your bot token
+2. **Get Your Chat ID:**
+
+   - Start your bot (send /start)
+   - Use [@userinfobot](https://t.me/userinfobot) to get your chat ID
+3. **Create a `.env` file:**
+
+```
+TELEGRAM_BOT_TOKEN=your_bot_token_here
+TELEGRAM_CHAT_IDS=your_chat_id1,your_chat_id2
 ```
 
-You can also use a database if your project supports it. Update the data source in the code accordingly.
+- You can add multiple chat IDs, separated by commas.
+
+4. **Prepare your timetable:**
+   - Use `timetable.xlsx` (first column: Day, then time slots as columns)
 
 ---
 
 ## ▶️ Usage
 
-Start the bot with:
+- **Daily Timetable:**
 
-```bash
-python main.py
-```
+  ```bash
+  python main.py
+  ```
 
-Then, open Telegram and interact with your bot:
+  (Sends today's full timetable at 8:00 AM)
+- **Hourly/Class Change Reminders:**
 
-| Command     | Description                    |
-|-------------|--------------------------------|
-| `/start`    | Start the bot and register     |
-| `/today`    | Get today's timetable          |
-| `/next`     | Get the next upcoming class    |
+  ```bash
+  python hourly_reminder.py
+  ```
 
----
-
-## 🗂 Timetable Format (CSV)
-
-If using a CSV file as the data source, make sure it follows this format:
-
-```csv
-day,start_time,end_time,subject,room
-Monday,09:00,10:00,Math,Room 101
-Tuesday,10:00,11:00,Physics,Room 203
-...
-```
+  (Sends a reminder only at the start of each class)
 
 ---
 
-## 🐳 Docker Support (Optional)
+## ☁️ Automation with GitHub Actions
 
-To run the bot in Docker:
+You can automate both scripts for free using GitHub Actions:
 
-**Dockerfile:**
-```dockerfile
-FROM python:3.11
-WORKDIR /app
-COPY . .
-RUN pip install -r requirements.txt
-CMD ["python", "main.py"]
-```
+- **Daily Timetable:** Runs every day at 8:00 AM IST
+- **Hourly Reminders:** Runs every hour during timetable hours, but only sends a message at class change
 
-**Build and run:**
-```bash
-docker build -t timetablebot .
-docker run -e BOT_TOKEN=<your_token> timetablebot
-```
+See `.github/workflows/` for ready-to-use workflow files.
+
+---
+
+## 🗂 Timetable Format (Excel)
+
+- The Excel file should have days as rows and time slots as columns:
+
+| Day     | 9:00 AM – 10:00 AM | 10:00 AM – 11:00 AM | ... |
+| ------- | ------------------- | -------------------- | --- |
+| Monday  | Math                | Physics              | ... |
+| Tuesday | ...                 | ...                  | ... |
 
 ---
 
 ## 🤝 Contributing
 
-Contributions are welcome!  
-To contribute:
+Contributions are welcome!
 
 1. Fork the repository
 2. Create a new branch: `git checkout -b feature-name`
@@ -112,4 +112,4 @@ This project is open-source and available under the [MIT License](LICENSE).
 
 ## 🙋‍♂️ Author
 
-Made with ❤️ by [pvk2004](https://github.com/pvk2004)
+Made  by [pvk2004](https://github.com/pvk2004)
