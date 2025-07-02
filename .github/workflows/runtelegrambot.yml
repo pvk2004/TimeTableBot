@@ -1,0 +1,29 @@
+name: Send Telegram Timetable
+
+on:
+  schedule:
+    - cron: '30 1 * * *'  # 8:00 AM IST (2:30 AM UTC)
+  workflow_dispatch:      # Allows manual trigger
+
+jobs:
+  send-timetable:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+
+      - name: Run timetable bot
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_IDS: ${{ secrets.TELEGRAM_CHAT_IDS }}
+        run: |
+          python main.py
