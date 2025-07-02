@@ -7,29 +7,19 @@ from datetime import datetime, time
 # Load environment variables from .env file
 load_dotenv()
 
-def get_current_subject(slots, now):
+def get_starting_subject(slots, now):
     # now is a datetime object
+    now_str_12 = now.strftime("%I:%M %p").lstrip('0')  # e.g., '9:00 AM'
+    now_str_24 = now.strftime("%H:%M")                 # e.g., '09:00'
     for start, end, subject in slots:
-        try:
-            # Try parsing times in both 12-hour and 24-hour formats
-            try:
-                start_dt = datetime.strptime(start.strip(), "%I:%M %p")
-                end_dt = datetime.strptime(end.strip(), "%I:%M %p")
-            except ValueError:
-                start_dt = datetime.strptime(start.strip(), "%H:%M")
-                end_dt = datetime.strptime(end.strip(), "%H:%M")
-        except Exception:
-            continue  # skip if time format is not as expected
-        # Replace the date with today's date for comparison
-        start_dt = start_dt.replace(year=now.year, month=now.month, day=now.day)
-        end_dt = end_dt.replace(year=now.year, month=now.month, day=now.day)
-        if start_dt.time() <= now.time() < end_dt.time():
-            return f"Current class: {subject} ({start} – {end})"
+        # Compare with both 12-hour and 24-hour formats
+        if start.strip().lstrip('0') == now_str_12 or start.strip() == now_str_24:
+            return f"Class starting now: {subject} ({start} – {end})"
     return None
 
 if __name__ == "__main__":
     now = datetime.now()
-    # Define timetable hours (e.g., 8:00 to 18:00)
+    # Define timetable hours (e.g., 9:00 to 16:00)
     timetable_start = time(9, 0)
     timetable_end = time(16, 0)
     if not (timetable_start <= now.time() < timetable_end):
@@ -39,7 +29,7 @@ if __name__ == "__main__":
     timetable = parse_excel_timetable("timetable.xlsx")
     today = now.strftime("%A").upper()
     slots = timetable.get(today) or timetable.get(today.title()) or []
-    message = get_current_subject(slots, now)
+    message = get_starting_subject(slots, now)
     if message:
         print(message)
         bot_token = os.environ.get("TELEGRAM_BOT_TOKEN")
@@ -48,4 +38,4 @@ if __name__ == "__main__":
         for chat_id in chat_ids:
             send_telegram_message(bot_token, chat_id, message)
     else:
-        print("No class scheduled for this hour. No message sent.") 
+        print("No class starting at this time. No message sent.") 
