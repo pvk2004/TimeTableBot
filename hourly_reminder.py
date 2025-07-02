@@ -32,8 +32,8 @@ if __name__ == "__main__":
     message = get_starting_subject(slots, now)
     if message:
         print(message)
-        bot_token = os.environ.get("TELEGRAM_BOT_TOKEN")
-        chat_ids = os.environ.get("TELEGRAM_CHAT_IDS", "").split(",")
+        bot_token = os.getenv("TELEGRAM_BOT_TOKEN")
+        chat_ids = os.getenv("TELEGRAM_CHAT_IDS", "").split(",")
         chat_ids = [cid.strip() for cid in chat_ids if cid.strip()]
         for chat_id in chat_ids:
             send_telegram_message(bot_token, chat_id, message)
