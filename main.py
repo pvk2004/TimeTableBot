@@ -1,7 +1,7 @@
 import os
 from dotenv import load_dotenv
 from timetable_parser import parse_excel_timetable
-from whatsapp_sender import send_whatsapp_message_twilio
+from telegram_sender import send_telegram_message
 from datetime import datetime
 
 # Load environment variables from .env file
@@ -20,22 +20,17 @@ def build_whatsapp_message(day, slots):
 
 if __name__ == "__main__":
     now = datetime.now()
-    # Only send at 8:00 AM
-    # if now.hour == 8 and now.minute == 0:
     timetable = parse_excel_timetable("timetable.xlsx")
     today = now.strftime("%A").upper()
     slots = timetable.get(today) or timetable.get(today.title()) or []
     message = build_whatsapp_message(today.title(), slots)
     print(message)
 
-        # Read Twilio credentials and WhatsApp numbers from environment variables
-    account_sid = os.getenv("TWILIO_ACCOUNT_SID")
-    auth_token = os.getenv("TWILIO_AUTH_TOKEN")
-    from_whatsapp_number = os.getenv("TWILIO_FROM_WHATSAPP")
-    to_whatsapp_numbers = os.getenv("TWILIO_TO_WHATSAPP_LIST", "").split(",")
-    to_whatsapp_numbers = [num.strip() for num in to_whatsapp_numbers if num.strip()]
+    # Read Telegram bot token and chat IDs from environment variables
+    bot_token = os.getenv("TELEGRAM_BOT_TOKEN")
+    chat_ids = os.getenv("TELEGRAM_CHAT_IDS", "").split(",")
+    chat_ids = [cid.strip() for cid in chat_ids if cid.strip()]
 
-    for to_whatsapp_number in to_whatsapp_numbers:
-        send_whatsapp_message_twilio(account_sid, auth_token, from_whatsapp_number, to_whatsapp_number, message)
-    # else:
-        # print("Not 8:00 AM. No message sent.")
+    for chat_id in chat_ids:
+        send_telegram_message(bot_token, chat_id, message)
+
