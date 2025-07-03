@@ -65,6 +65,27 @@ Leave this running so users can subscribe by sending /start to your bot. All cha
 
 ---
 
+## 🚂 Deploying the Collector Bot on Railway
+
+1. Push your code to GitHub.
+2. Create a new Railway project and link your repo.
+3. Add environment variables: `TELEGRAM_BOT_TOKEN` and `MONGODB_URI`.
+4. Railway will automatically install dependencies from `requirements.txt` before running your bot.
+5. Set the Start Command to:
+   ```
+   python run_telegram_collector.py
+   ```
+6. If dependencies are not installed automatically, add a `Procfile` with:
+   ```
+   release: pip install -r requirements.txt
+   start: python run_telegram_collector.py
+   ```
+   or manually run `pip install -r requirements.txt` in the Railway shell before starting.
+
+Check Railway logs to ensure your bot starts and dependencies are installed.
+
+---
+
 ## ▶️ Usage
 
 - **Daily Timetable:**
