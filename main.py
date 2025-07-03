@@ -3,34 +3,40 @@ from dotenv import load_dotenv
 from timetable_parser import parse_excel_timetable
 from telegram_sender import send_telegram_message
 from datetime import datetime
+from pymongo import MongoClient
 
-# Load environment variables from .env file
+# Load environment variables from .env file (for local dev; in GitHub Actions, secrets are set as env vars)
 load_dotenv()
 
-def build_whatsapp_message(day, slots):
+def get_today_timetable_message(timetable, today):
+    slots = timetable.get(today) or timetable.get(today.title()) or []
     if not slots:
-        return f"Good Morning! No classes scheduled for {day}."
-    msg = f"Good Morning! Here's your timetable for {day}:\n"
+        return "No classes scheduled for today!"
+    msg = f"Today's Timetable ({today}):\n"
     for start, end, subject in slots:
-        # If start or end contains multiple times, only use the first and last
-        start_clean = start.split('–')[0].strip()
-        end_clean = end.split('–')[-1].strip()
-        msg += f"- {start_clean} – {end_clean}: {subject}\n"
+        msg += f"{start} – {end}: {subject}\n"
     return msg.strip()
+
+def get_chat_ids_from_mongo():
+    mongo_uri = os.getenv("MONGODB_URI")
+    client = MongoClient(mongo_uri)
+    db = client["timetablebot"]
+    collection = db["chat_ids"]
+    return [doc["chat_id"] for doc in collection.find()]
 
 if __name__ == "__main__":
     now = datetime.now()
     timetable = parse_excel_timetable("timetable.xlsx")
     today = now.strftime("%A").upper()
-    slots = timetable.get(today) or timetable.get(today.title()) or []
-    message = build_whatsapp_message(today.title(), slots)
-    print(message)
-
-    # Read Telegram bot token and chat IDs from environment variables
+    message = get_today_timetable_message(timetable, today)
+    chat_ids = get_chat_ids_from_mongo()
     bot_token = os.getenv("TELEGRAM_BOT_TOKEN")
-    chat_ids = os.getenv("TELEGRAM_CHAT_IDS", "").split(",")
-    chat_ids = [cid.strip() for cid in chat_ids if cid.strip()]
-
+    if not bot_token:
+        print("TELEGRAM_BOT_TOKEN not set. Exiting.")
+        exit(1)
+    if not chat_ids:
+        print("No chat IDs found. Exiting.")
+        exit(0)
     for chat_id in chat_ids:
         send_telegram_message(bot_token, chat_id, message)
 

@@ -2,8 +2,9 @@ name: Send Telegram Timetable
 
 on:
   schedule:
-    - cron: '30 1 * * *'  # 8:00 AM IST (2:30 AM UTC)
-  workflow_dispatch:      # Allows manual trigger
+    # Runs every 5 minutes
+    - cron: '*/5 * * * *'
+  workflow_dispatch:
 
 jobs:
   send-timetable:
@@ -24,6 +25,6 @@ jobs:
       - name: Run timetable bot
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
-          TELEGRAM_CHAT_IDS: ${{ secrets.TELEGRAM_CHAT_IDS }}
+          MONGODB_URI: ${{ secrets.MONGODB_URI }}
         run: |
-          python main.py
+          python main.py 

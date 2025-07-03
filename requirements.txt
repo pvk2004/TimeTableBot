@@ -2,3 +2,5 @@ python-dotenv
 twilio
 pandas
 openpyxl
+python-telegram-bot
+pymongo

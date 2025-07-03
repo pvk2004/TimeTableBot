@@ -7,7 +7,7 @@ TimeTableBot is a Telegram bot that automatically sends you your class timetable
 ## 🚀 Features
 
 - 📆 Sends daily class timetable every morning at 8:00 AM (IST)
-- ⏰ Sends reminders at the start of each class (no spam during long labs)
+- ⏰ Sends reminders 5 minutes before each class starts (no spam during long labs)
 - 🗓 Loads timetable from an Excel file (`timetable.xlsx`)
 - 🤖 100% free using Telegram Bot API
 - ☁️ Can be automated with GitHub Actions (no server needed)
@@ -33,21 +33,35 @@ pip install -r requirements.txt
    - Message [@BotFather](https://t.me/BotFather) on Telegram
    - Use `/newbot` and follow the instructions
    - Save your bot token
-2. **Get Your Chat ID:**
+2. **Automatic Chat ID Collection:**
 
-   - Start your bot (send /start)
-   - Use [@userinfobot](https://t.me/userinfobot) to get your chat ID
-3. **Create a `.env` file:**
+   - Start your bot (send /start) on Telegram.
+   - The bot will automatically collect your chat ID and store it in `chat_ids.txt`.
+   - No need to manually edit any files for chat IDs.
+   - To unsubscribe, contact the bot admin or (optionally) implement a /stop command.
+3. **Set up Environment Variables:**
 
+For local development, create a `.env` file:
 ```
 TELEGRAM_BOT_TOKEN=your_bot_token_here
-TELEGRAM_CHAT_IDS=your_chat_id1,your_chat_id2
+MONGODB_URI=your_mongodb_atlas_uri_here
 ```
 
-- You can add multiple chat IDs, separated by commas.
+For GitHub Actions, add both `TELEGRAM_BOT_TOKEN` and `MONGODB_URI` as repository secrets in your GitHub repo settings.
 
-4. **Prepare your timetable:**
-   - Use `timetable.xlsx` (first column: Day, then time slots as columns)
+---
+
+## 🛠 Running the Collector Bot
+
+To collect chat IDs automatically, run the following in your terminal:
+
+```python
+import asyncio
+from telegram_sender import run_collector_bot
+asyncio.run(run_collector_bot())
+```
+
+Leave this running so users can subscribe by sending /start to your bot. All chat IDs will be saved in `chat_ids.txt`.
 
 ---
 
@@ -66,18 +80,22 @@ TELEGRAM_CHAT_IDS=your_chat_id1,your_chat_id2
   python hourly_reminder.py
   ```
 
-  (Sends a reminder only at the start of each class)
+  (Sends a reminder 5 minutes before each class starts)
 
 ---
 
-## ☁️ Automation with GitHub Actions
+## ☁️ GitHub Actions Automation
 
-You can automate both scripts for free using GitHub Actions:
+All scripts are designed to work seamlessly with GitHub Actions:
 
 - **Daily Timetable:** Runs every day at 8:00 AM IST
-- **Hourly Reminders:** Runs every hour during timetable hours, but only sends a message at class change
+- **Hourly Reminders:** Runs every 5 minutes during timetable hours, but only sends a message 5 minutes before each class starts
 
-See `.github/workflows/` for ready-to-use workflow files.
+**How it works:**
+The scripts fetch all chat IDs from MongoDB Atlas, so all subscribed users (via /start) will receive notifications.
+You must add both `TELEGRAM_BOT_TOKEN` and `MONGODB_URI` as repository secrets in your GitHub repo settings.
+
+See `.github/workflows/` for ready-to-use workflow files. No manual chat ID management is needed.
 
 ---
 

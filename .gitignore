@@ -5,3 +5,4 @@ __pycache__/
 *.pyo
 *.pyd
 PyWhatKit_DB.txt
+chat_ids.txt

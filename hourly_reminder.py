@@ -2,20 +2,37 @@ import os
 from dotenv import load_dotenv
 from timetable_parser import parse_excel_timetable
 from telegram_sender import send_telegram_message
-from datetime import datetime, time
+from datetime import datetime, time, timedelta
+from pymongo import MongoClient
 
-# Load environment variables from .env file
+# Load environment variables from .env file (for local dev; in GitHub Actions, secrets are set as env vars)
 load_dotenv()
 
-def get_starting_subject(slots, now):
-    # now is a datetime object
-    now_str_12 = now.strftime("%I:%M %p").lstrip('0')  # e.g., '9:00 AM'
-    now_str_24 = now.strftime("%H:%M")                 # e.g., '09:00'
+def get_upcoming_subject(slots, now, advance_minutes=5, window_minutes=5):
     for start, end, subject in slots:
-        # Compare with both 12-hour and 24-hour formats
-        if start.strip().lstrip('0') == now_str_12 or start.strip() == now_str_24:
-            return f"Class starting now: {subject} ({start} – {end})"
+        for fmt in ("%I:%M %p", "%H:%M"):
+            try:
+                start_dt = datetime.strptime(start.strip(), fmt)
+                break
+            except ValueError:
+                continue
+        else:
+            continue  # skip if time format is not as expected
+
+        start_dt = start_dt.replace(year=now.year, month=now.month, day=now.day)
+        # Calculate the window: [start_dt - advance_minutes, start_dt - advance_minutes + window_minutes)
+        window_start = start_dt - timedelta(minutes=advance_minutes)
+        window_end = window_start + timedelta(minutes=window_minutes)
+        if window_start <= now < window_end:
+            return f"Upcoming class in {advance_minutes} minutes: {subject} ({start} – {end})"
     return None
+
+def get_chat_ids_from_mongo():
+    mongo_uri = os.getenv("MONGODB_URI")
+    client = MongoClient(mongo_uri)
+    db = client["timetablebot"]
+    collection = db["chat_ids"]
+    return [doc["chat_id"] for doc in collection.find()]
 
 if __name__ == "__main__":
     now = datetime.now()
@@ -29,12 +46,17 @@ if __name__ == "__main__":
     timetable = parse_excel_timetable("timetable.xlsx")
     today = now.strftime("%A").upper()
     slots = timetable.get(today) or timetable.get(today.title()) or []
-    message = get_starting_subject(slots, now)
+    message = get_upcoming_subject(slots, now, advance_minutes=5, window_minutes=5)
+    chat_ids = get_chat_ids_from_mongo()
+    bot_token = os.getenv("TELEGRAM_BOT_TOKEN")
+    if not bot_token:
+        print("TELEGRAM_BOT_TOKEN not set. Exiting.")
+        exit(1)
+    if not chat_ids:
+        print("No chat IDs found. Exiting.")
+        exit(0)
     if message:
         print(message)
-        bot_token = os.getenv("TELEGRAM_BOT_TOKEN")
-        chat_ids = os.getenv("TELEGRAM_CHAT_IDS", "").split(",")
-        chat_ids = [cid.strip() for cid in chat_ids if cid.strip()]
         for chat_id in chat_ids:
             send_telegram_message(bot_token, chat_id, message)
     else:

@@ -2,8 +2,8 @@ name: Hourly Timetable Reminder
 
 on:
   schedule:
-    # Runs every hour from 9:00 to 15:00 UTC (which is 9:00 to 16:00 IST)
-    - cron: '0 3-10 * * *'  # 9:00 to 16:00 IST (IST = UTC+5:30, so 9:00 IST = 3:30 UTC, but GitHub Actions only supports full hours)
+    # Runs every 5 minutes
+    - cron: '*/5 * * * *'
   workflow_dispatch:
 
 jobs:
@@ -25,6 +25,6 @@ jobs:
       - name: Run hourly reminder bot
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
-          TELEGRAM_CHAT_IDS: ${{ secrets.TELEGRAM_CHAT_IDS }}
+          MONGODB_URI: ${{ secrets.MONGODB_URI }}
         run: |
           python hourly_reminder.py
