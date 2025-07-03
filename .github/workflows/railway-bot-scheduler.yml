@@ -27,6 +27,7 @@ jobs:
           RAILWAY_SERVICE_ID: ${{ secrets.RAILWAY_SERVICE_ID }}
         run: |
           ACTION="${{ steps.action.outputs.action }}"
+          echo "Action is: $ACTION"
           if [ "$ACTION" = "start" ]; then
             curl -X POST \
               -H "Authorization: Bearer $RAILWAY_API_TOKEN" \

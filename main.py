@@ -2,7 +2,7 @@ import os
 from dotenv import load_dotenv
 from timetable_parser import parse_excel_timetable
 from telegram_sender import send_telegram_message
-from datetime import datetime
+from datetime import datetime, time, timedelta
 from pymongo import MongoClient
 
 # Load environment variables from .env file (for local dev; in GitHub Actions, secrets are set as env vars)
@@ -26,6 +26,13 @@ def get_chat_ids_from_mongo():
 
 if __name__ == "__main__":
     now = datetime.now()
+    # Only send between 8:00 and 8:10 AM
+    send_window_start = time(8, 0)
+    send_window_end = (datetime.combine(now.date(), send_window_start) + timedelta(minutes=10)).time()
+    if not (send_window_start <= now.time() < send_window_end):
+        print("Not in 8:00-8:10 AM window. No message sent.")
+        exit(0)
+
     timetable = parse_excel_timetable("timetable.xlsx")
     today = now.strftime("%A").upper()
     message = get_today_timetable_message(timetable, today)
