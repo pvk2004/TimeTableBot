@@ -4,3 +4,4 @@ pandas
 openpyxl
 python-telegram-bot
 pymongo
+nest_asyncio
