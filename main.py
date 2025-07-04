@@ -26,11 +26,12 @@ def get_chat_ids_from_mongo():
 
 if __name__ == "__main__":
     now = datetime.now()
-    # Only send between 8:00 and 8:10 AM
-    send_window_start = time(7, 30)
-    send_window_end = (datetime.combine(now.date(), send_window_start) + timedelta(minutes=20)).time()
+    # Only send between 7:50 and 8:10 AM
+    send_window_start = time(7, 50)
+    send_window_end = time(8, 10)
+    print(f"Current time: {now.time()}, send window: {send_window_start} to {send_window_end}")
     if not (send_window_start <= now.time() < send_window_end):
-        print("Not in 8:00-8:10 AM window. No message sent.")
+        print("Not in 7:50-8:10 AM window. No message sent.")
         exit(0)
 
     timetable = parse_excel_timetable("timetable.xlsx")

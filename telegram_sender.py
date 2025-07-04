@@ -29,6 +29,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     # Only add if not already present
     if not collection.find_one({"chat_id": chat_id}):
         collection.insert_one({"chat_id": chat_id})
+        print(f"Added new chat_id: {chat_id}")
     if update.message:
         await update.message.reply_text("You are now subscribed to timetable notifications!")
 
@@ -55,8 +56,9 @@ async def run_collector_bot():
     app.add_handler(CommandHandler("stop", stop))
     print("Bot is running. Press Ctrl+C to stop.")
     await app.run_polling()
-    return
 
-# To run the collector bot, use the following in a separate script or in __main__:
-# import asyncio
-# asyncio.run(run_collector_bot()) 
+if __name__ == "__main__":
+    import asyncio
+    import nest_asyncio
+    nest_asyncio.apply()
+    asyncio.run(run_collector_bot()) 
