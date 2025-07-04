@@ -24,6 +24,22 @@ def get_chat_ids_from_mongo():
     collection = db["chat_ids"]
     return [doc["chat_id"] for doc in collection.find()]
 
+def check_if_already_sent_today():
+    mongo_uri = os.getenv("MONGODB_URI")
+    client = MongoClient(mongo_uri)
+    db = client["timetablebot"]
+    collection = db["daily_sent"]
+    today = datetime.now().strftime("%Y-%m-%d")
+    return collection.find_one({"date": today}) is not None
+
+def mark_as_sent_today():
+    mongo_uri = os.getenv("MONGODB_URI")
+    client = MongoClient(mongo_uri)
+    db = client["timetablebot"]
+    collection = db["daily_sent"]
+    today = datetime.now().strftime("%Y-%m-%d")
+    collection.insert_one({"date": today, "sent_at": datetime.now()})
+
 if __name__ == "__main__":
     now = datetime.now()
     # Only send between 7:50 and 8:10 AM
@@ -32,6 +48,11 @@ if __name__ == "__main__":
     print(f"Current time: {now.time()}, send window: {send_window_start} to {send_window_end}")
     if not (send_window_start <= now.time() < send_window_end):
         print("Not in 7:50-8:10 AM window. No message sent.")
+        exit(0)
+
+    # Check if already sent today
+    if check_if_already_sent_today():
+        print("Daily timetable already sent today. No message sent.")
         exit(0)
 
     timetable = parse_excel_timetable("timetable.xlsx")
@@ -45,6 +66,12 @@ if __name__ == "__main__":
     if not chat_ids:
         print("No chat IDs found. Exiting.")
         exit(0)
+    
+    # Send message to all users
     for chat_id in chat_ids:
         send_telegram_message(bot_token, chat_id, message)
+    
+    # Mark as sent today
+    mark_as_sent_today()
+    print("Daily timetable sent successfully.")
 
