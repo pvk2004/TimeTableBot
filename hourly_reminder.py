@@ -39,7 +39,7 @@ if __name__ == "__main__":
     # Define timetable hours (e.g., 9:00 to 16:00)
     timetable_start = time(9, 0)
     timetable_end = time(16, 0)
-    if not (timetable_start <= now.time() < timetable_end):
+    if not (timetable_start <= now.time() and now.time()<= timetable_end):
         print("Outside timetable hours. No message sent.")
         exit(0)
 
