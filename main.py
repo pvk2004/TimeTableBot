@@ -28,7 +28,7 @@ if __name__ == "__main__":
     now = datetime.now()
     # Only send between 8:00 and 8:10 AM
     send_window_start = time(7, 30)
-    send_window_end = (datetime.combine(now.date(), send_window_start) + timedelta(minutes=30)).time()
+    send_window_end = (datetime.combine(now.date(), send_window_start) + timedelta(minutes=20)).time()
     if not (send_window_start <= now.time() < send_window_end):
         print("Not in 8:00-8:10 AM window. No message sent.")
         exit(0)
