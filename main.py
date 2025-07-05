@@ -43,8 +43,8 @@ def mark_as_sent_today():
 if __name__ == "__main__":
     now = datetime.now()
     # Only send between 7:50 and 8:10 AM
-    send_window_start = time(7, 50)
-    send_window_end = time(8, 30)
+    send_window_start = time(2, 00)
+    send_window_end = time(3, 00)
     print(f"Current time: {now.time()}, send window: {send_window_start} to {send_window_end}")
     if not (send_window_start <= now.time() < send_window_end):
         print("Not in 7:50-8:10 AM window. No message sent.")
