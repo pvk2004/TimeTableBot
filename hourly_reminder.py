@@ -4,13 +4,9 @@ from timetable_parser import parse_excel_timetable
 from telegram_sender import send_telegram_message
 from datetime import datetime, time, timedelta
 from pymongo import MongoClient
-import pytz
 
 # Load environment variables from .env file (for local dev; in GitHub Actions, secrets are set as env vars)
 load_dotenv()
-
-# Set IST timezone
-IST = pytz.timezone('Asia/Kolkata')
 
 def get_upcoming_subject(slots, now, advance_minutes=5, window_minutes=5):
     for start, end, subject in slots:
@@ -23,8 +19,8 @@ def get_upcoming_subject(slots, now, advance_minutes=5, window_minutes=5):
         else:
             continue  # skip if time format is not as expected
 
-        # Set the date and timezone for the slot
-        start_dt = IST.localize(start_dt.replace(year=now.year, month=now.month, day=now.day))
+        # Set the date for the slot (UTC)
+        start_dt = start_dt.replace(year=now.year, month=now.month, day=now.day)
         # Calculate the window: [start_dt - advance_minutes, start_dt - advance_minutes + window_minutes)
         window_start = start_dt - timedelta(minutes=advance_minutes)
         window_end = window_start + timedelta(minutes=window_minutes)
@@ -41,14 +37,14 @@ def get_chat_ids_from_mongo():
     return [doc["chat_id"] for doc in collection.find()]
 
 if __name__ == "__main__":
-    # Always use IST for all time calculations
-    now = datetime.now(IST)
-    print(f"Current IST time: {now}")
-    # Define timetable hours (9:00 to 16:00 IST)
-    timetable_start = time(9, 0)
-    timetable_end = time(16, 0)
+    # Use UTC for all time calculations
+    now = datetime.utcnow()
+    print(f"Current UTC time: {now}")
+    # Define timetable hours (3:30 to 10:30 UTC)
+    timetable_start = time(3, 30)
+    timetable_end = time(10, 30)
     if not (timetable_start <= now.time() <= timetable_end):
-        print("Outside timetable hours (9:00-16:00 IST). No message sent.")
+        print("Outside timetable hours (3:30-10:30 UTC). No message sent.")
         exit(0)
 
     timetable = parse_excel_timetable("timetable.xlsx")

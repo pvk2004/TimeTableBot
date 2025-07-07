@@ -2,7 +2,7 @@ import os
 from dotenv import load_dotenv
 from timetable_parser import parse_excel_timetable
 from telegram_sender import send_telegram_message
-from datetime import datetime, time, timedelta
+from datetime import datetime, time, timedelta, timezone
 from pymongo import MongoClient
 
 # Load environment variables from .env file (for local dev; in GitHub Actions, secrets are set as env vars)
@@ -41,13 +41,13 @@ def mark_as_sent_today():
     collection.insert_one({"date": today, "sent_at": datetime.now()})
 
 if __name__ == "__main__":
-    now = datetime.now()
-    # Only send between 7:50 and 8:10 AM
-    send_window_start = time(2, 00)
-    send_window_end = time(3, 00)
-    print(f"Current time: {now.time()}, send window: {send_window_start} to {send_window_end}")
+    now = datetime.now(timezone.utc)
+    # Only send between 2:00 and 3:00 AM UTC
+    send_window_start = time(2, 0)
+    send_window_end = time(3, 0)
+    print(f"Current UTC time: {now.time()}, send window: {send_window_start} to {send_window_end}")
     if not (send_window_start <= now.time() < send_window_end):
-        print("Not in 7:50-8:10 AM window. No message sent.")
+        print("Not in 2:00-3:00 AM UTC window. No message sent.")
         exit(0)
 
     # Check if already sent today
