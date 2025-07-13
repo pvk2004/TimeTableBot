@@ -11,7 +11,7 @@ load_dotenv()
 def get_today_timetable_message(timetable, today):
     slots = timetable.get(today) or timetable.get(today.title()) or []
     if not slots:
-        return "No classes scheduled for today!"
+        return "No classes scheduled for today!\n~~~Happy Holidays!~~~"
     msg = f"Today's Timetable ({today}):\n"
     for start, end, subject in slots:
         msg += f"{start} – {end}: {subject}\n"
