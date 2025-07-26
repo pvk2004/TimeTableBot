@@ -9,11 +9,16 @@ def clean_time_slot(slot):
         return f"{match[0]} – {match[1]}"
     return slot.strip()
 
+def _get_start_end_from_slot(slot):
+    """Splits a time slot string like '9:00 AM – 10:00 AM' into start and end."""
+    parts = [p.strip() for p in slot.split('–')]
+    return parts[0], parts[-1]
+
 
 def parse_excel_timetable(file_path):
     """
     Parses an Excel timetable file and returns a dict:
-    { 'Monday': [('9:00 AM', 'DBMS'), ...], ... }
+    { 'Monday': [('9:00 AM', '10:00 AM', 'DBMS'), ...], ... }
     """
     df = pd.read_excel(file_path, header=0)
     df = df.fillna("")  # Replace NaN with empty string
@@ -36,16 +41,17 @@ def parse_excel_timetable(file_path):
             if prev_subject is None:
                 # Start new subject block
                 prev_subject = subject_str
-                start_time = time
+                start_time, _ = _get_start_end_from_slot(time)
             elif subject_str != prev_subject:
                 # End previous block, start new
-                slot_list.append((start_time, prev_time, prev_subject))
+                _, end_time = _get_start_end_from_slot(prev_time)
+                slot_list.append((start_time, end_time, prev_subject))
                 prev_subject = subject_str
-                start_time = time
+                start_time, _ = _get_start_end_from_slot(time)
             prev_time = time
         # Add last subject block
         if prev_subject is not None:
-            slot_list.append((start_time, prev_time, prev_subject))
+            _, end_time = _get_start_end_from_slot(prev_time)
+            slot_list.append((start_time, end_time, prev_subject))
         timetable[day] = slot_list
     return timetable
-
