@@ -43,8 +43,8 @@ def mark_as_sent_today():
 if __name__ == "__main__":
     now = datetime.now(timezone.utc)
     # Only send between 2:00 and 3:00 AM UTC
-    send_window_start = time(2, 0)
-    send_window_end = time(3, 0)
+    send_window_start = time(1, 0)
+    send_window_end = time(2, 30)
     print(f"Current UTC time: {now.time()}, send window: {send_window_start} to {send_window_end}")
     if not (send_window_start <= now.time() < send_window_end):
         print("Not in 2:00-3:00 AM UTC window. No message sent.")
