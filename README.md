@@ -10,11 +10,11 @@ TimeTableBot is a Telegram bot that automatically sends you your class timetable
 - ⏰ Sends reminders 5 minutes before each class starts (no spam during long labs or continuous same classes)
 - 🗓 Loads timetable from an Excel file (`timetable.xlsx`)
 - 🤖 100% free using Telegram Bot API
-- ☁️ Automated with GitHub Actions (no server needed)
+- ☁️ Automated with Render (no server management needed)
 
 ---
 
-## 📦 Installation
+## 📦 Installation (Local Development)
 
 ```bash
 git clone https://github.com/pvk2004/TimeTableBot.git
@@ -44,7 +44,7 @@ TELEGRAM_BOT_TOKEN=your_bot_token_here
 MONGODB_URI=your_mongodb_atlas_uri_here
 ```
 
-For GitHub Actions, add both `TELEGRAM_BOT_TOKEN` and `MONGODB_URI` as repository secrets in your GitHub repo settings.
+For Render, set both `TELEGRAM_BOT_TOKEN` and `MONGODB_URI` as environment variables in the Render dashboard.
 
 ---
 
@@ -58,21 +58,33 @@ For GitHub Actions, add both `TELEGRAM_BOT_TOKEN` and `MONGODB_URI` as repositor
   - Users send `/start` to subscribe and `/stop` to unsubscribe.
 
 - **Daily Timetable (Automated):**
-  - GitHub Actions runs `main.py` every 5 minutes.
+  - On Render, a scheduled worker runs `main.py` every morning.
   - The script sends the timetable to all users **between 7:50 and 8:10 AM IST**.
 
 - **Hourly/Class Change Reminders (Automated):**
-  - GitHub Actions runs `hourly_reminder.py` every 5 minutes.
+  - On Render, a scheduled worker runs `hourly_reminder.py` every 5 minutes.
   - The script sends reminders **5 minutes before each class** (only between **9:00 and 16:00 IST**).
   - No spamming for long labs or continuous same classes.
 
 ---
 
-## 🛠 GitHub Actions Automation
+## ☁️ Deploying on Render
+
+1. [Sign up for Render](https://render.com).
+2. Click "New Blueprint" and connect your repo.
+3. Render will detect `render.yaml` and set up services:
+   - **Web Service**: For Telegram bot chat ID collection.
+   - **Workers**: For daily and hourly timetable notifications.
+4. Set the environment variables `TELEGRAM_BOT_TOKEN` and `MONGODB_URI` in the Render dashboard.
+5. Upload your `timetable.xlsx` file in the Render dashboard or commit it to your repo.
+
+---
+
+## 🛠 Render Automation
 
 - **No need for a 24/7 server or Railway/Heroku.**
-- All notifications are sent by scheduled GitHub Actions workflows.
-- See `.github/workflows/telegram_schedule.yml` and `.github/workflows/hourly_reminder.yml` for details.
+- All notifications are sent by scheduled Render background workers.
+- See `render.yaml` for details.
 
 ---
 
