@@ -1,6 +1,7 @@
 import os
 import threading
 import requests
+import asyncio # <-- Import asyncio
 from dotenv import load_dotenv
 from flask import Flask
 from pymongo import MongoClient
@@ -61,7 +62,7 @@ def send_daily_job():
     slots = timetable.get(today) or timetable.get(today.title()) or []
 
     if not slots:
-        message = "No classes scheduled for today!\n~~~Happy Holiday!~~~\n\n\t Enjoy your day!"
+        message = "No classes scheduled for today! Enjoy your day!"
     else:
         message = f"Today's Timetable ({today}):\n"
         for start, end, subject in slots:
@@ -123,8 +124,14 @@ def send_telegram_message(bot_token, chat_id, message):
 
 
 # --- 5. APPLICATION RUNNERS ---
+
+# THIS IS THE CORRECTED FUNCTION
 def run_bot():
     """Starts the interactive Telegram bot in a background thread."""
+    # Create and set a new event loop for this thread
+    loop = asyncio.new_event_loop()
+    asyncio.set_event_loop(loop)
+
     bot_token = os.getenv("TELEGRAM_BOT_TOKEN")
     app = ApplicationBuilder().token(bot_token).build()
     app.add_handler(CommandHandler("start", start))
