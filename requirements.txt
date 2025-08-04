@@ -1,8 +1,7 @@
-python-dotenv
 pandas
 openpyxl
-python-telegram-bot
 pymongo
-nest_asyncio
+python-dotenv
 requests
 pytz
+python-telegram-bot
