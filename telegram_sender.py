@@ -59,6 +59,4 @@ async def run_collector_bot():
 
 if __name__ == "__main__":
     import asyncio
-    import nest_asyncio
-    nest_asyncio.apply()
     asyncio.run(run_collector_bot()) 
