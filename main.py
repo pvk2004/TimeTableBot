@@ -48,12 +48,12 @@ if __name__ == "__main__":
     
     # Skip time check in GitHub Actions (cron handles timing)
     if not os.getenv('GITHUB_ACTIONS'):
-        # Only send between 5:30 and 7:30 AM UTC
-        send_window_start = time(5, 30)
-        send_window_end = time(7, 30)
+        # Only send between 0:30 and 2:30 AM UTC
+        send_window_start = time(0, 30)
+        send_window_end = time(2, 30)
         print(f"Current UTC time: {now.time()}, send window: {send_window_start} to {send_window_end}")
         if not (send_window_start <= now.time() < send_window_end):
-            print("Not in 5:30 - 7:30 AM UTC window. No message sent.")
+            print("Not in 0:30 - 2:30 AM UTC window. No message sent.")
             exit(0)
     
     print(f"Running timetable bot at {now} UTC")
