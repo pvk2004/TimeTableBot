@@ -147,17 +147,17 @@ def run_web_server():
 if __name__ == "__main__":
     # Start the bot in a separate thread
     bot_thread = threading.Thread(target=run_bot)
-    bot_thread.daemon = True
-    bot_thread.start()
+    # bot_thread.daemon = True
+    # bot_thread.start()
     
-    # Add jobs to the scheduler
-    # Daily job at 8:00 AM IST
-    scheduler.add_job(send_daily_job, 'cron', day_of_week='mon-sat', hour=8, minute=0)
-    # Hourly job every 5 minutes between 9 AM and 5 PM IST
-    scheduler.add_job(send_hourly_job, 'cron', day_of_week='mon-sat', hour='9-17', minute='*/5')
+    # # Add jobs to the scheduler
+    # # Daily job at 8:00 AM IST
+    # scheduler.add_job(send_daily_job, 'cron', day_of_week='mon-sat', hour=8, minute=0)
+    # # Hourly job every 5 minutes between 9 AM and 5 PM IST
+    # scheduler.add_job(send_hourly_job, 'cron', day_of_week='mon-sat', hour='9-17', minute='*/5')
     
-    scheduler.start()
-    print("SCHEDULER: Started. Jobs are scheduled.")
+    # scheduler.start()
+    # print("SCHEDULER: Started. Jobs are scheduled.")
 
     # Start the web server in the main thread
     print("SERVER: Starting Flask server...")
